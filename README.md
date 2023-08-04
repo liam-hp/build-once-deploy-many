@@ -1,2 +1,3 @@
-# Build Once Deploy Many React Apps
- Implementation guide for a build once, deploy many approach to react apps
+# React App Implementation CICD Guide: Build once, Deploy many
+
+A GitHub actions x react-inject-env approach to build once deploy many
