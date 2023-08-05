@@ -1,0 +1,24 @@
+name: Create promotion PR
+
+on:
+  workflow_call:
+    inputs:
+      DESTINATION_BRANCH:
+        required: true
+        type: string
+jobs:
+  open-promote-pr:
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Promote ${{ github.head_ref }}
+        id: open-pr
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: ${{ github.head_ref }}
+          destination_branch: ${{ inputs.DESTINATION_BRANCH }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "chore(auto-promote): ${{ github.head_ref }} to ${{ inputs.DESTINATION_BRANCH }}"
+          pr_body: ":arrow_up: *An automated PR to promote from ${{ github.head_ref }} to ${{ inputs.DESTINATION_BRANCH }} branch*"
+          pr_label: autopromote
