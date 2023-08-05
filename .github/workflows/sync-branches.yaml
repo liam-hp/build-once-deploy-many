@@ -11,9 +11,9 @@ jobs:
     timeout-minutes: 2
     runs-on: ubuntu-latest
     steps:
-      name: Create Pull Request
-      run: |
-        gh pr create --base qa --head dev --label "autopromote" --title "chore(promote): dev to qa"
+      - name: Create Pull Request
+        run: |
+          gh pr create --base qa --head dev --label "autopromote" --title "chore(promote): dev to qa"
 
 
   # promote-pr-internal:
