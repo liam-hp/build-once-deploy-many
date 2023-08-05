@@ -10,8 +10,10 @@ jobs:
     if: github.ref == 'dev' && github.event.pull_request.merged == true
     timeout-minutes: 2
     runs-on: ubuntu-latest
-    run: |
-      gh pr create --base qa --head dev --label "autopromote" --title "chore(promote): dev to qa"
+    steps:
+      name: Create Pull Request
+      run: |
+        gh pr create --base qa --head dev --label "autopromote" --title "chore(promote): dev to qa"
 
 
   # promote-pr-internal:
