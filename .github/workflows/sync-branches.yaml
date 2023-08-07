@@ -1,4 +1,4 @@
-name: Trigger PRs to sync branches
+name: Generate Pull Request
 
 on:
   pull_request:
@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Promote ${{ github.head_ref }}
+      - name: Promote dev to qa
         uses: repo-sync/pull-request@v2
         with:
-          source_branch: ${{github.head_ref}}
+          source_branch: dev
           destination_branch: qa
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "chore(auto-promote): ${{github.head_ref}} to qa"
-          pr_body: ":arrow_up: *An automated PR to promote from ${{github.head_ref}} to qa branch*"
+          pr_title: "chore(auto-promote): dev to qa"
+          pr_body: ":arrow_up: *An automated PR to promote from dev to qa branch*"
           pr_label: autopromote
   
   promote-pr-qa:
@@ -26,14 +26,15 @@ jobs:
     timeout-minutes: 2
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Promote qa to main
+        uses: repo-sync/pull-request@v2
         with:
-          source_branch: ${{github.head_ref}}
+          source_branch: qa
           destination_branch: main
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "chore(auto-promote): ${{github.head_ref}} to main"
-          pr_body: ":arrow_up: *An automated PR to promote from ${{github.head_ref}} to main branch*"
+          pr_title: "chore(auto-promote): qa to main"
+          pr_body: ":arrow_up: *An automated PR to promote from qa to main branch*"
           pr_label: autopromote
         
   sync-pr-main:
@@ -42,13 +43,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - uses: actions/checkout@v3
-        - name: Promote ${{ github.head_ref }}
+        - name: Sync main to dev
           uses: repo-sync/pull-request@v2
           with:
-            source_branch: ${{github.head_ref}}
+            source_branch: main
             destination_branch: dev
             github_token: ${{ secrets.GITHUB_TOKEN }}
-            pr_title: "chore(auto-sync): ${{github.head_ref}} to dev"
-            pr_body: ":arrow_up: *An automated PR to sync from ${{github.head_ref}} to dev branch*"
+            pr_title: "chore(auto-sync): main to dev"
+            pr_body: ":arrow_up: *An automated PR to sync from main to dev branch*"
             pr_label: autopromote
         
