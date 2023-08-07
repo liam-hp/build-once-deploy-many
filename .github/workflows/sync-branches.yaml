@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Promote ${{ github.head_ref }}
+      - name: Promote dev to qa
         uses: repo-sync/pull-request@v2
         with:
           source_branch: dev
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Promote ${{ github.head_ref }}
+      - name: Promote qa to main
         uses: repo-sync/pull-request@v2
         with:
           source_branch: qa
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - uses: actions/checkout@v3
-        - name: Promote ${{ github.head_ref }}
+        - name: Sync main to dev
           uses: repo-sync/pull-request@v2
           with:
             source_branch: main
