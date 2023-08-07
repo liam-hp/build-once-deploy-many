@@ -10,46 +10,46 @@ jobs:
     timeout-minutes: 2
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Promote ${{ github.head_ref }}
+        uses: repo-sync/pull-request@v2
         with:
-          fetch-depth: 0
-          
-      - name: Create Pull Request 
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr create --base qa --head dev --label "autopromote" --title "chore(promote): dev to qa" --body ":arrow_up: *An automated PR to promote dev to qa*"
-
-  gpromote-pr-qa:
+          source_branch: ${{github.head_ref}}
+          destination_branch: qa
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "chore(auto-promote): ${{github.head_ref}} to qa"
+          pr_body: ":arrow_up: *An automated PR to promote from ${{github.head_ref}} to qa branch*"
+          pr_label: autopromote
+  
+  promote-pr-qa:
     if: github.ref == 'qa' && github.event.pull_request.merged == true
     timeout-minutes: 2
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Promote ${{ github.head_ref }}
+        uses: repo-sync/pull-request@v2
         with:
-          fetch-depth: 0
-          
-      - name: Create Pull Request 
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr create --base main --head qa --label "autopromote" --title "chore(promote): qa to main" --body ":arrow_up: *An automated PR to promote qa to main*"
+          source_branch: ${{github.head_ref}}
+          destination_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "chore(auto-promote): ${{github.head_ref}} to main"
+          pr_body: ":arrow_up: *An automated PR to promote from ${{github.head_ref}} to main branch*"
+          pr_label: autopromote
         
   sync-pr-main:
     if: github.ref == 'main' && github.event.pull_request.merged == true
     timeout-minutes: 2
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          
-      - name: Create Pull Request 
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr create --base dev --head main --label "sync" --title "chore(sync): main to dev" --body ":arrow_up: *An automated PR to sync main to dev*"
+        - uses: actions/checkout@v3
+        - name: Promote ${{ github.head_ref }}
+          uses: repo-sync/pull-request@v2
+          with:
+            source_branch: ${{github.head_ref}}
+            destination_branch: dev
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            pr_title: "chore(auto-sync): ${{github.head_ref}} to dev"
+            pr_body: ":arrow_up: *An automated PR to sync from ${{github.head_ref}} to dev branch*"
+            pr_label: autopromote
         
