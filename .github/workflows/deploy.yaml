@@ -47,7 +47,7 @@ jobs:
       - name: Inject Environment Variables 
         working-directory: ./.github
         run: | # inject envs, dynamic envs (not contained in .env-cmdrc) can be injected the same was REACT_APP_RELEASE is
-          REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }
+          REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
 
       - name: Deploy the build
         working-directory: ./.github
