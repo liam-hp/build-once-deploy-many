@@ -1,0 +1,51 @@
+# .github/workflows/release.yaml
+
+name: Trigger Release
+
+on:
+  workflow_call
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.create-release.outputs.deploy }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: yarn
+          cache-dependency-path: ./.github/yarn.lock # in .github dir
+
+      - name: Install Dependencies
+        working-directory: ./.github # in .github dir
+        run: yarn install --frozen-lockfile
+
+      - name: Download Raw Build Artifact # download build from workflow
+        uses: actions/download-artifact@master
+        with:
+          name: raw_build
+          path: .github/build # in .github dir
+
+      - name: gZIP build as tarball # you could also zip here instead
+        working-directory: .github # in .github dir
+        run: tar czf build.tar.gz build
+            
+      - name: Create Release
+        working-directory: .github # in .github dir
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OUTPUT=$(npx semantic-release)
+          echo $OUTPUT
+          if [[ $OUTPUT == *"There are no relevant changes, so no new version is released."* ]]; then
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi

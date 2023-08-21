@@ -1,0 +1,55 @@
+# .github/workflows/deploy.yaml
+
+name: Inject Envs and Deploy
+
+on:
+  workflow_call:
+    inputs:
+      DEPLOY_ENV:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: yarn
+          cache-dependency-path: ./.github/yarn.lock # .github
+
+      - name: Install Dependencies
+        working-directory: ./.github # .github
+        run: yarn install --frozen-lockfile
+
+      - name: Get Latest Tag
+        id: get-tag
+        run: | # fetch the latest release (will always be the one generated from release.yaml)
+          SEM_VER_TAG=`git describe --tags --always`
+          echo "SEM_VER_TAG=$SEM_VER_TAG" >> $GITHUB_ENV
+      
+      - name: Download Build Artifact # download build from workflow
+        uses: actions/download-artifact@master
+        with:
+          name: raw_build
+          path: .github/build
+      
+      - name: Inject Environment Variables 
+        working-directory: ./.github
+        run: | # inject envs, dynamic envs (not contained in .env-cmdrc) can be injected the same was REACT_APP_RELEASE is
+          REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }
+
+      - name: Deploy the build
+        working-directory: ./.github
+        run: |
+          amplify publish
