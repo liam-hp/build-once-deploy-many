@@ -1,0 +1,16 @@
+{
+  "name": "minimal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "inject-dev": "cd ../ && env-cmd -r ./.env-cmdrc -e dev react-inject-env set",
+    "inject-qa": "cd ../ && env-cmd -r ./.env-cmdrc -e qa react-inject-env set",
+    "inject-prod": "cd ../ && env-cmd -r ./.env-cmdrc -e prod react-inject-env set"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "env-cmd": "^10.1.0",
+    "react-inject-env": "^2.1.0"
+  }
+}

@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import { env } from './env.js'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         >
           Learn React
         </a>
+        <p> {env.REACT_APP_ENV} </p>
       </header>
     </div>
   );
