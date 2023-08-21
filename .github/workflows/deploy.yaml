@@ -32,6 +32,16 @@ jobs:
         working-directory: ./.github # .github
         run: yarn install --frozen-lockfile
 
+      - name: Configure Amplify
+        uses: ambientlight/amplify-cli-action@0.3.0
+        with:
+          amplify_command: configure
+          amplify_env: ${{inputs.DEPLOY_ENV}}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+
       - name: Get Latest Tag
         id: get-tag
         run: | # fetch the latest release (will always be the one generated from release.yaml)
@@ -49,12 +59,13 @@ jobs:
         run: | # inject envs, dynamic envs (not contained in .env-cmdrc) can be injected the same was REACT_APP_RELEASE is
           REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
 
-      - name: Deploy the build
-        working-directory: ./.github
-        run: |
-          yarn amplify configure
-          yarn amplify publish
+      - name: Deploy
+        uses: ambientlight/amplify-cli-action@0.3.0
+        with:
+          amplify_command: publish
+          amplify_env: ${{inputs.DEPLOY_ENV}}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1   # Replace with your AWS region
+          AWS_REGION: us-east-1
+    
