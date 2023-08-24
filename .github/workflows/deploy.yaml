@@ -56,6 +56,7 @@ jobs:
 
       - name: Deploy to AWS Amplify
         run: |
+          yarn add @aws-amplify/cli
           amplify configure --usage-data-off
           amplify env checkout ${{ inputs.DEPLOY_ENV }}
           amplify publish
