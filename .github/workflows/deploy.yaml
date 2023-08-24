@@ -33,7 +33,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Test Access Secrets
-        run: echo ${{ secrets.TEST_SECRET }}
+        run: echo '${{ secrets.TEST_SECRET }}''
 
       - name: Configure Amplify
         uses: ambientlight/amplify-cli-action@0.3.0
