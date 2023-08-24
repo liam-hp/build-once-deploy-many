@@ -61,6 +61,7 @@ jobs:
           yarn add @aws-amplify/cli
           yarn amplify configure --usage-data-off
           yarn amplify pull ${{ secrets.AWS_APP_ID }}
+          yarn amplify env list
           yarn amplify env checkout ${{ inputs.DEPLOY_ENV }}
           yarn amplify publish
         env:
