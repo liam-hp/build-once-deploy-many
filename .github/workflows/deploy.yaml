@@ -55,6 +55,14 @@ jobs:
         working-directory: ./.github
         run: REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
 
+      # move to root dir?
+
+      - name: Set up AWS credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region us-east-1
+
       - name: Deploy to AWS Amplify
         working-directory: ./.github
         run: |
