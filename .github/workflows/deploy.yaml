@@ -51,16 +51,15 @@ jobs:
       
       - name: Inject Environment Variables 
         working-directory: ./.github
-        run: | # inject envs, dynamic envs (not contained in .env-cmdrc) can be injected the same was REACT_APP_RELEASE is
-          REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
+        run: REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
 
       - name: Deploy to AWS Amplify
         working-directory: ./.github
         run: |
           yarn add @aws-amplify/cli
-          amplify configure --usage-data-off
-          amplify env checkout ${{ inputs.DEPLOY_ENV }}
-          amplify publish
+          yarn amplify configure --usage-data-off
+          yarn amplify env checkout ${{ inputs.DEPLOY_ENV }}
+          yarn amplify publish
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
