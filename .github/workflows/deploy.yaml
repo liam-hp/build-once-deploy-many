@@ -12,6 +12,8 @@ on:
       AWS_ACCESS_KEY_ID:
         required: true
       AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_APP_ID:
         required: true      
 
 jobs:
@@ -58,6 +60,7 @@ jobs:
         run: |
           yarn add @aws-amplify/cli
           yarn amplify configure --usage-data-off
+          yarn amplify pull ${{ secrets.AWS_APP_ID }}
           yarn amplify env checkout ${{ inputs.DEPLOY_ENV }}
           yarn amplify publish
         env:
