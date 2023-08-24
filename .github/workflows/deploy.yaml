@@ -8,6 +8,14 @@ on:
       DEPLOY_ENV:
         required: true
         type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+        type: string
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        type: string
+      
 
 jobs:
   deploy:
@@ -31,9 +39,6 @@ jobs:
       - name: Install Dependencies
         working-directory: ./.github # .github
         run: yarn install --frozen-lockfile
-
-      - name: Test Access Secrets
-        run: echo '${{ secrets.TEST_SECRET }}'
 
       - name: Configure Amplify
         uses: ambientlight/amplify-cli-action@0.3.0

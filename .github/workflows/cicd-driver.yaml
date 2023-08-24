@@ -43,3 +43,4 @@ jobs:
     needs: release-dev
     with:
       DEPLOY_ENV: dev
+    secrets: inherit
