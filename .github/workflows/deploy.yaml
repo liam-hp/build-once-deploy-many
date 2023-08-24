@@ -63,10 +63,15 @@ jobs:
           git checkout ${{ inputs.DEPLOY_ENV }}
           yarn add @aws-amplify/cli 
           yarn amplify configure --usage-data-off \
-          --accessKeyId ${{ secrets.AWS_ACCESS_KEY_ID }} \
-          --secretAccessKey ${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-          --region ${{ secrets.AWS_REGION }}
-          yarn amplify pull ${{ secrets.AWS_APP_ID }} 
+            --accessKeyId ${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --secretAccessKey ${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            --region ${{ secrets.AWS_REGION }}
+          expect -c '
+            spawn yarn amplify pull ${{ secrets.AWS_APP_ID }} --yes
+            expect "Select the authentication method you want to use:"
+            send "AWS profile\n"
+            expect eof
+          '
           yarn amplify env list 
           yarn amplify env checkout ${{ inputs.DEPLOY_ENV }} 
           yarn amplify publish 
