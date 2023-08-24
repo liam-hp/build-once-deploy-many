@@ -57,18 +57,15 @@ jobs:
 
       # move to root dir?
 
-      - name: Set up AWS credentials
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set default.region us-east-1
-
       - name: Deploy to AWS Amplify
         working-directory: ./.github
         run: |
           git checkout ${{ inputs.DEPLOY_ENV }}
           yarn add @aws-amplify/cli 
-          yarn amplify configure --usage-data-off 
+          yarn amplify configure set
+            accessKeyId ${{ secrets.AWS_ACCESS_KEY_ID }}
+            secretAccessKey ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            region us-east-1
           yarn amplify pull ${{ secrets.AWS_APP_ID }} 
           yarn amplify env list 
           yarn amplify env checkout ${{ inputs.DEPLOY_ENV }} 
