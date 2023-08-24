@@ -58,14 +58,15 @@ jobs:
       - name: Deploy to AWS Amplify
         working-directory: ./.github
         run: |
-          yarn add @aws-amplify/cli
-          yarn amplify configure --usage-data-off
-          yarn amplify pull ${{ secrets.AWS_APP_ID }}
-          yarn amplify env list
-          yarn amplify env checkout ${{ inputs.DEPLOY_ENV }}
-          yarn amplify publish
+          git checkout ${{ inputs.DEPLOY_ENV }}
+          yarn add @aws-amplify/cli 
+          yarn amplify configure --usage-data-off 
+          yarn amplify pull ${{ secrets.AWS_APP_ID }} 
+          yarn amplify env list 
+          yarn amplify env checkout ${{ inputs.DEPLOY_ENV }} 
+          yarn amplify publish 
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          AWS_DEFAULT_REGION: us-east-1 
       
