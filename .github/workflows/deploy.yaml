@@ -55,6 +55,7 @@ jobs:
           REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
 
       - name: Deploy to AWS Amplify
+        working-directory: ./.github
         run: |
           yarn add @aws-amplify/cli
           amplify configure --usage-data-off
