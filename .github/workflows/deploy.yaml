@@ -58,8 +58,11 @@ jobs:
         working-directory: ./.github
         run: REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
 
-      - name: Set up AWS CLI
-        uses: aws-actions/aws-cli-setup@v2
+      # - name: Configure AWS credentials from Test account
+      #   uses: aws-actions/configure-aws-credentials@v3
+      #   with:
+      #     role-to-assume: arn:aws:iam::111111111111:role/my-github-actions-role-test
+      #     aws-region: us-east-1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
