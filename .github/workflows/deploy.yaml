@@ -8,6 +8,9 @@ on:
       DEPLOY_ENV:
         required: true
         type: string
+      S3_BUCKET:
+        required: true
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -55,24 +58,22 @@ jobs:
         working-directory: ./.github
         run: REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
 
-      # move to root dir?
+    - name: Set up AWS CLI
+      uses: aws-actions/aws-cli-setup@v2
 
-      - name: Deploy to AWS Amplify
-        working-directory: ./.github
-        run: |
-          git checkout ${{ inputs.DEPLOY_ENV }}
-          yarn add @aws-amplify/cli 
-          yarn amplify configure --usage-data-off \
-            --accessKeyId ${{ secrets.AWS_ACCESS_KEY_ID }} \
-            --secretAccessKey ${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            --region ${{ secrets.AWS_REGION }}
-          expect -c '
-            spawn yarn amplify pull ${{ secrets.AWS_APP_ID }} --yes
-            expect "Select the authentication method you want to use:"
-            send "AWS profile\n"
-            expect eof
-          '
-          yarn amplify env list 
-          yarn amplify env checkout ${{ inputs.DEPLOY_ENV }} 
-          yarn amplify publish 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Run AWS CLI Command
+      run: |
+        aws s3 ls
+
+    - name: Deploy to AWS S3
+      run: |
+        aws s3 sync ./.github/build ${{ inputs.S3_BUCKET }}
+
       

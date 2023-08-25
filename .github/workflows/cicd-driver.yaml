@@ -43,4 +43,5 @@ jobs:
     needs: release-dev
     with:
       DEPLOY_ENV: dev
+      S3_BUCKET: s3://build-once-deploy-many-dev
     secrets: inherit
