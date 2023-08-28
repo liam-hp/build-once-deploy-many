@@ -33,15 +33,28 @@ jobs:
         with:
           name: raw_build
           path: build
+
   release-dev:
     if: github.ref == 'refs/heads/dev'
     needs: build-and-save-dev
     uses: ./.github/workflows/release.yaml
+  
+  fetch-build-qa-main:
+    if: github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/fetch-build.yaml
+    with:
+      FETCH_FROM: "${{ github.ref_name == 'qa' ? 'dev' : 'qa' }}"
+
+  release-qa-main:
+    if: github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/main'
+    needs: fetch-and-save-qa-main
+    uses: ./.github/workflows/release.yaml
+
   inject-deploy-dev:
     if: github.ref == 'refs/heads/dev' && ${{ needs.release-internal.outputs.deploy }}
     uses: ./.github/workflows/deploy.yaml
-    needs: release-dev
+    needs: release-${{ github.ref_name }}
     with:
-      DEPLOY_ENV: dev
+      DEPLOY_ENV: ${{ github.ref_name }}
       S3_BUCKET: s3://build-once-deploy-many-${{ github.ref_name }}
     secrets: inherit
