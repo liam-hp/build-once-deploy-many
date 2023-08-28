@@ -40,7 +40,7 @@ jobs:
     uses: ./.github/workflows/release.yaml
   
   fetch-build-qa:
-    if: github.ref == 'refs/heads/qa
+    if: github.ref == 'refs/heads/qa'
     uses: ./.github/workflows/fetch-build.yaml
     with:
       FETCH_FROM: dev
