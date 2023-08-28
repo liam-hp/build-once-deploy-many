@@ -45,8 +45,8 @@ jobs:
     with:
       FETCH_FROM: dev
   
-  fetch-build-main:
-    if: github.ref == 'refs/heads/main'
+  fetch-build-prod:
+    if: github.ref == 'refs/heads/prod'
     uses: ./.github/workflows/fetch-build.yaml
     with:
       FETCH_FROM: qa
@@ -56,9 +56,9 @@ jobs:
     needs: fetch-build-qa
     uses: ./.github/workflows/release.yaml
 
-  release-main:
-    if: github.ref == 'refs/heads/main'
-    needs: fetch-build-main
+  release-prod:
+    if: github.ref == 'refs/heads/prod'
+    needs: fetch-build-prod
     uses: ./.github/workflows/release.yaml
 
   inject-deploy-dev:
@@ -79,10 +79,10 @@ jobs:
       S3_BUCKET: s3://build-once-deploy-many-${{ github.ref_name }}
     secrets: inherit
 
-  inject-deploy-main:
-    if: github.ref == 'refs/heads/main' && ${{ needs.release-internal.outputs.deploy }}
+  inject-deploy-prod:
+    if: github.ref == 'refs/heads/prod' && ${{ needs.release-internal.outputs.deploy }}
     uses: ./.github/workflows/deploy.yaml
-    needs: release-main
+    needs: release-prod
     with:
       DEPLOY_ENV: ${{ github.ref_name }}
       S3_BUCKET: s3://build-once-deploy-many-${{ github.ref_name }}
