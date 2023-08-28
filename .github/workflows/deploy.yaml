@@ -52,17 +52,11 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: raw_build
-          path: .github/build
+          path: build
       
       - name: Inject Environment Variables 
         working-directory: ./.github
         run: REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
-
-      # - name: Configure AWS credentials from Test account
-      #   uses: aws-actions/configure-aws-credentials@v3
-      #   with:
-      #     role-to-assume: arn:aws:iam::111111111111:role/my-github-actions-role-test
-      #     aws-region: us-east-1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -70,10 +64,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-
-      - name: Run AWS CLI Command
-        run: |
-          aws s3 ls
 
       - name: Deploy to AWS S3
         run: |
