@@ -1,5 +1,5 @@
 module.exports = {
-    branches: [{ name: 'main' }, { name: 'qa', prerelease: true }, { name: 'dev', prerelease: true }],
+    branches: [{ name: 'prod' }, { name: 'qa', prerelease: true }, { name: 'dev', prerelease: true }],
     plugins: [
       [
         '@semantic-release/github',
