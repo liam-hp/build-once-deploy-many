@@ -43,7 +43,7 @@ jobs:
     if: github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/main'
     uses: ./.github/workflows/fetch-build.yaml
     with:
-      FETCH_FROM: "${{ github.ref_name == 'qa' ? 'dev' : 'qa' }}"
+      FETCH_FROM: ${{ if eq(github.ref_name, 'qa'), 'dev', 'qa' }}
 
   release-qa-main:
     if: github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/main'
