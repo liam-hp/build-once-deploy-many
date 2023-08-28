@@ -67,6 +67,6 @@ jobs:
 
       - name: Deploy to AWS S3
         run: |
-          aws s3 sync ./.github/build ${{ inputs.S3_BUCKET }}
+          aws s3 sync ./build ${{ inputs.S3_BUCKET }}
 
       
