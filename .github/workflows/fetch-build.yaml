@@ -1,0 +1,54 @@
+name: Fetch and Save
+
+on:
+  workflow_call:
+    inputs:
+      FETCH_FROM:
+        required: true
+        type: string
+
+jobs:
+  fetch-and-save:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+ 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: yarn
+          cache-dependency-path: ./.github/yarn.lock # in .github
+
+      - name: Install dependencies
+        working-directory: ./.github
+        run: yarn install --frozen-lockfile # in .github
+
+      - name: Get Latest Tag # fetch latest tag from previous environment
+        id: get-tag
+        run: |
+          SEM_VER_TAG=`git tag --list '*${{inputs.FETCH_FROM}}.*' | sort -V -r | head -n 1`
+          echo "SEM_VER_TAG=$SEM_VER_TAG" >> $GITHUB_ENV
+      
+      - name: Fetch Build from Latest Release # fetch build from release
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "liam-hp/build-once-deploy-many"
+          version: "tags/${{ env.SEM_VER_TAG }}"
+          file: "build.tar.gz"
+          regex: true
+          target: .github/
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Unpack the tarball # unpack the tarball (or zip if yw)
+        working-directory: ./.github
+        run: tar xzvf build.tar.gz
+    
+      - name: Save Raw Build # save the build to git actions workflow
+        uses: actions/upload-artifact@master
+        with:
+          name: raw_build
+          path: ./.github/build

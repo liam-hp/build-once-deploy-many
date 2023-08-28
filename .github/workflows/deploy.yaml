@@ -1,0 +1,72 @@
+# .github/workflows/deploy.yaml
+
+name: Inject Envs and Deploy
+
+on:
+  workflow_call:
+    inputs:
+      DEPLOY_ENV:
+        required: true
+        type: string
+      S3_BUCKET:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_APP_ID:
+        required: true      
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: yarn
+          cache-dependency-path: ./.github/yarn.lock # .github
+
+      - name: Install Dependencies
+        working-directory: ./.github # .github
+        run: yarn install --frozen-lockfile
+
+      - name: Get Latest Tag
+        id: get-tag
+        run: | # fetch the latest release (will always be the one generated from release.yaml)
+          SEM_VER_TAG=`git describe --tags --always`
+          echo "SEM_VER_TAG=$SEM_VER_TAG" >> $GITHUB_ENV
+      
+      - name: Download Build Artifact # download build from workflow
+        uses: actions/download-artifact@master
+        with:
+          name: raw_build
+          path: build
+      
+      - name: Inject Environment Variables 
+        working-directory: ./.github
+        run: REACT_APP_RELEASE=${{env.SEM_VER_TAG}} yarn run inject-${{ inputs.DEPLOY_ENV }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to AWS S3
+        run: |
+          aws s3 sync ./build ${{ inputs.S3_BUCKET }}
+
+      
