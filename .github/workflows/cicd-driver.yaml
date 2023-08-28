@@ -39,15 +39,15 @@ jobs:
     needs: build-and-save-dev
     uses: ./.github/workflows/release.yaml
   
-  fetch-build-qa-main:
-    if: github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/main'
+  fetch-build-qa:
+    if: github.ref == 'refs/heads/qa
     uses: ./.github/workflows/fetch-build.yaml
     with:
-      FETCH_FROM: ${{ if eq(github.ref_name, 'qa'), 'dev', 'qa' }}
+      FETCH_FROM: dev
 
-  release-qa-main:
-    if: github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/main'
-    needs: fetch-and-save-qa-main
+  release-qa:
+    if: github.ref == 'refs/heads/qa'
+    needs: fetch-build-qa
     uses: ./.github/workflows/release.yaml
 
   inject-deploy-dev:
