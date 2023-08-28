@@ -1,0 +1,47 @@
+name: Build, Release, Deploy
+on:
+  push:
+    branches:
+      - dev
+      - qa
+      - prod
+jobs:
+  build-and-save-dev:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: yarn
+          cache-dependency-path: ./yarn.lock
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Create Build Files
+        run: yarn run build-static
+      
+      - name: Save Raw Build # save build as workflow artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: raw_build
+          path: build
+  release-dev:
+    if: github.ref == 'refs/heads/dev'
+    needs: build-and-save-dev
+    uses: ./.github/workflows/release.yaml
+  inject-deploy-dev:
+    if: github.ref == 'refs/heads/dev' && ${{ needs.release-internal.outputs.deploy }}
+    uses: ./.github/workflows/deploy.yaml
+    needs: release-dev
+    with:
+      DEPLOY_ENV: dev
+      S3_BUCKET: s3://build-once-deploy-many-${{ github.ref_name }}
+    secrets: inherit
