@@ -37,19 +37,3 @@ jobs:
           pr_body: ":arrow_up: *An automated PR to promote from qa to prod branch*"
           pr_label: autopromote
         
-  sync-pr-prod:
-    if: github.ref == 'prod' && github.event.pull_request.merged == true
-    timeout-minutes: 2
-    runs-on: ubuntu-latest
-    steps:
-        - uses: actions/checkout@v3
-        - name: Sync prod to dev
-          uses: repo-sync/pull-request@v2
-          with:
-            source_branch: prod
-            destination_branch: dev
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            pr_title: "chore(auto-sync): prod to dev"
-            pr_body: ":arrow_up: *An automated PR to sync from prod to dev branch*"
-            pr_label: autopromote
-        
